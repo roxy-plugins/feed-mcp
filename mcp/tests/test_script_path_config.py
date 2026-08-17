@@ -12,6 +12,7 @@ from scripts.path_config import resolve_feed_db, resolve_workspace_path
 
 def test_explicit_paths_have_priority(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.delenv("AKA_PLUGIN_DATA_DIR", raising=False)
+    monkeypatch.delenv("ROXY_WORKSPACE", raising=False)
     monkeypatch.delenv("AKASHIC_WORKSPACE", raising=False)
 
     assert resolve_feed_db(tmp_path / "feed.db") == tmp_path / "feed.db"
@@ -22,7 +23,7 @@ def test_environment_paths_are_isolated(monkeypatch: pytest.MonkeyPatch, tmp_pat
     data_dir = tmp_path / "plugin-data"
     workspace = tmp_path / "workspace"
     monkeypatch.setenv("AKA_PLUGIN_DATA_DIR", str(data_dir))
-    monkeypatch.setenv("AKASHIC_WORKSPACE", str(workspace))
+    monkeypatch.setenv("ROXY_WORKSPACE", str(workspace))
 
     assert resolve_feed_db(None) == data_dir / "feed_mcp.sqlite3"
     assert resolve_workspace_path(None, "sessions.db") == workspace / "sessions.db"
@@ -30,12 +31,20 @@ def test_environment_paths_are_isolated(monkeypatch: pytest.MonkeyPatch, tmp_pat
 
 def test_missing_environment_fails_loudly(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("AKA_PLUGIN_DATA_DIR", "   ")
+    monkeypatch.setenv("ROXY_WORKSPACE", "   ")
     monkeypatch.setenv("AKASHIC_WORKSPACE", "   ")
 
     with pytest.raises(RuntimeError, match="AKA_PLUGIN_DATA_DIR"):
         resolve_feed_db(None)
-    with pytest.raises(RuntimeError, match="AKASHIC_WORKSPACE"):
+    with pytest.raises(RuntimeError, match="ROXY_WORKSPACE"):
         resolve_workspace_path(None, "sessions.db")
+
+
+def test_legacy_workspace_is_a_fallback(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    monkeypatch.delenv("ROXY_WORKSPACE", raising=False)
+    monkeypatch.setenv("AKASHIC_WORKSPACE", str(tmp_path))
+
+    assert resolve_workspace_path(None, "sessions.db") == tmp_path / "sessions.db"
 
 
 def test_blank_explicit_paths_fail_loudly() -> None:
