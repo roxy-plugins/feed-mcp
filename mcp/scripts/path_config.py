@@ -22,7 +22,10 @@ def resolve_workspace_path(explicit: Path | None, *parts: str) -> Path:
         if not raw_explicit:
             raise RuntimeError("数据库路径不能为空")
         return Path(raw_explicit).expanduser()
-    workspace = os.environ.get("AKASHIC_WORKSPACE", "").strip()
+    workspace = (
+        os.environ.get("ROXY_WORKSPACE", "").strip()
+        or os.environ.get("AKASHIC_WORKSPACE", "").strip()
+    )
     if not workspace:
-        raise RuntimeError("未提供数据库路径，且缺少 AKASHIC_WORKSPACE")
+        raise RuntimeError("未提供数据库路径，且缺少 ROXY_WORKSPACE")
     return Path(workspace).expanduser().joinpath(*parts)

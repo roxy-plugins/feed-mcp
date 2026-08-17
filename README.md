@@ -1,6 +1,6 @@
 # feed-mcp
 
-`feed-mcp` 是一个 Aka 插件试点仓库，打包了三类能力：
+`feed-mcp` 是一个 Roxy 插件试点仓库，打包了三类能力：
 
 - `lifecycle`: 最小 `FeedPlugin`
 - `skills`: `feed-manage` 与 `rsshub-route-finder`
@@ -24,14 +24,14 @@ feed-mcp
 本仓库用于验证：
 
 - `plugin.py` 程序化声明生命周期、skills、MCP 与主动信息源
-- `~/.akashic-plugin/cache` 下的 installed plugin 装载
+- `~/.roxy-plugin/cache` 下的 installed plugin 装载
 - skill 软链接
 - 插件程序化 MCP 注册
 
 运行时目录：
 
 ```text
-~/.akashic-plugin
+~/.roxy-plugin
 ├─ cache/
 │  └─ <marketplace>/feed/<version>/
 │     ├─ plugin.py
@@ -74,6 +74,7 @@ feed-mcp
 
 - 插件首次启动时，如果 `$AKA_PLUGIN_DATA_DIR/feed_mcp.sqlite3` 不存在
 - 会尝试从旧目录复制历史数据
-  - `$AKASHIC_WORKSPACE/mcp/feed-mcp/`
-  - `$AKASHIC_WORKSPACE/backups/feed-plugin-migration-*/feed-mcp/`
+  - `$ROXY_WORKSPACE/mcp/feed-mcp/`
+  - `$ROXY_WORKSPACE/backups/feed-plugin-migration-*/feed-mcp/`
 - 迁移的是运行态数据，不是把数据打包进仓库
+- 旧 `AKASHIC_WORKSPACE` 只作为已有安装的兼容回退
